@@ -1834,6 +1834,18 @@ string - the full shell command to run."
   (interactive (list (read-file-name "File: ")))
   (if (and (eq system-type 'windows-nt)
            (fboundp 'w32-shell-execute))
+      (w32-shell-execute "counsel-external-process" x)
+    (start-process-shell-command "counsel-external-process" nil
+                                 (format "%s %s" (cl-case system-type
+                                                   (darwin "open")
+                                                   (t "xdg-open"))
+                                         (shell-quote-argument x)))))
+
+(defun counsel-locate-action-extern (x)
+  "Use xdg-open shell command, or corresponding system command, on X."
+  (interactive (list (read-file-name "File: ")))
+  (if (and (eq system-type 'windows-nt)
+           (fboundp 'w32-shell-execute))
       (w32-shell-execute "open" x)
     (call-process shell-file-name nil
                   nil nil
